@@ -1,0 +1,88 @@
+#in this file i made a game which called racer
+#this car mover right and left then collect the coin i actually coppied the code from the site which you gave us  the link and added some commands
+import pygame
+import random
+import sys
+
+pygame.init()
+
+WIDTH, HEIGHT = 400, 600
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Racer with Coins")
+
+WHITE = (255, 255, 255)
+GRAY = (100, 100, 100)
+YELLOW = (255, 215, 0)
+
+# adding car and coins png
+player_img = pygame.image.load("player_car.png")
+coin_img = pygame.image.load("coin.png")
+player_img = pygame.transform.scale(player_img, (120, 140))
+coin_img = pygame.transform.scale(coin_img, (30, 30))
+
+# cars movement
+player_rect = player_img.get_rect()
+player_rect.center = (WIDTH // 2, HEIGHT - 120)
+player_speed = 5
+
+# working with the coin
+coin_rects = []
+coin_spawn_delay = 60  
+coin_timer = 0
+coin_speed = 4
+coin_count = 0  # number of collected coin
+
+# ront of numbers
+font = pygame.font.SysFont(None, 36)
+
+clock = pygame.time.Clock()
+FPS = 60
+
+running = True
+while running:
+    screen.fill(GRAY)
+
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+
+    # towch daral i dunno ho to say it in english
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_LEFT] and player_rect.left > 0:
+        player_rect.x -= player_speed
+    if keys[pygame.K_RIGHT] and player_rect.right < WIDTH:
+        player_rect.x += player_speed
+
+    # coins will come randomly
+    coin_timer += 1
+    if coin_timer >= coin_spawn_delay:
+        coin_x = random.randint(50, WIDTH - 50)
+        coin_rect = coin_img.get_rect(center=(coin_x, -30))
+        coin_rects.append(coin_rect)
+        coin_timer = 0
+
+    
+    for coin in coin_rects[:]:
+        coin.y += coin_speed
+        screen.blit(coin_img, coin)
+
+        if player_rect.colliderect(coin):
+            coin_rects.remove(coin)
+            coin_count += 1
+        elif coin.top > HEIGHT:
+            coin_rects.remove(coin)
+
+    
+    screen.blit(player_img, player_rect)
+
+    # write coins number in display
+    coin_text = font.render(f"Coins: {coin_count}", True, YELLOW)
+    screen.blit(coin_text, (WIDTH - 150, 10))
+
+    pygame.display.flip()
+    clock.tick(FPS)
+
+pygame.quit()
+sys.exit()
+# and this code worked succesfully
